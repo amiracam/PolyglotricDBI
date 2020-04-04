@@ -49,9 +49,11 @@ RdmsService >> initialize [
 
 { #category : #initialization }
 RdmsService >> initializeDatabaseConnection [
+	" pull url into config"
 	connection := P3Client new
 		url: 'psql://TEST_TBOSSS_ADMIN1:ADMIN1@192.168.40.107:5432/TEST_TBOSSS'.
-	self checkConnectionStatus
+
+	self checkConnectionStatus.
 ]
 
 { #category : #initialization }

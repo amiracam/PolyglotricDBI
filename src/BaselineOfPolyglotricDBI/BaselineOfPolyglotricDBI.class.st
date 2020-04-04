@@ -31,6 +31,9 @@ BaselineOfPolyglotricDBI >> baseline: spec [
 			"Packages"
 				spec 
 					package: 'PolyglotricDBI';
-					package: 'PolyglotricDBI-Tests' with: [ spec requires: #('PolyglotricDBI') ]
+					package: 'PolyglotricDBI-Tests' with: [ spec requires: #('PolyglotricDBI') ];
+					baseline: 'NeoJSON' with: [ spec repository: 'github://svenvc/NeoJSON:master/repository' ];
+					baseline: 'ZTimestamp' with: [ spec repository: 'github://svenvc/ztimestamp:master/repository' ].
+					
 			 ]
 ]
