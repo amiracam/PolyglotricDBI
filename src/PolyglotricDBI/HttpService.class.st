@@ -13,15 +13,19 @@ Class {
 { #category : #deployment }
 HttpService class >> deploy [
 	"self deploy"
-	
-	^ singleton ifNil: [ singleton := self new ]
+	self undeploy.
+	singleton := self new 
 ]
 
 { #category : #deployment }
 HttpService class >> undeploy [
 	"self undeploy"
 
-	^ singleton stop
+	singleton
+		ifNotNil: [ 
+			singleton stop.
+			singleton := nil
+			].
 ]
 
 { #category : #'initailize-release' }
@@ -42,16 +46,30 @@ HttpService >> initialize [
 ]
 
 { #category : #'initailize-release' }
-HttpService >> initializeRoutes [ 
+HttpService >> initializeRoutes [
 	"setup http server and routes"
-	"scope: class-variables  &  instance-variables"	
-			
-	
- 	server 
-		GET: '/heart_beat' -> 'OK'
+
+	"scope: class-variables  &  instance-variables"
+
+	server 
+		GET: '/heart_beat' -> 'OK';
+		POST: '/testJsonPayload' -> [ :request | self testJsonPayload: request ]
 ]
 
 { #category : #'initailize-release' }
 HttpService >> stop [ 
 	^ server stop 
+]
+
+{ #category : #'private - testing' }
+HttpService >> testJsonPayload: httpRequest [
+	""
+
+	| dict |
+	dict := NeoJSONReader fromString: httpRequest contents.
+
+	^ ZnResponse new
+		statusLine: ZnStatusLine ok;
+		entity: (ZnEntity text: 'Hello ' , (dict at: 'name'));
+		yourself.
 ]
