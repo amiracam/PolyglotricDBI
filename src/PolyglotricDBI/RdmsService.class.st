@@ -1,6 +1,6 @@
 Class {
 	#name : #RdmsService,
-	#superclass : #Object,
+	#superclass : #ExtendedService,
 	#instVars : [
 		'connection'
 	],
@@ -39,12 +39,18 @@ RdmsService >> checkConnectionStatus [
 	'Succesfully connected to database' record.
 ]
 
+{ #category : #services }
+RdmsService >> connect: aMessage [
+
+	self halt.
+]
+
 { #category : #initialization }
 RdmsService >> initialize [
 	"grab url from config file later"
-
+	super initialize.
 	self initializeLogger.
-	self initializeDatabaseConnection
+	self initializeDatabaseConnection.
 ]
 
 { #category : #initialization }
