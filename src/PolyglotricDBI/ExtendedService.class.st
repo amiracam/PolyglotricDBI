@@ -11,6 +11,12 @@ Class {
 }
 
 { #category : #initialization }
+ExtendedService class >> deploy [ 
+	"For now just initialize"
+	^ self new
+]
+
+{ #category : #initialization }
 ExtendedService >> deploy [
 	self loadConfiguration.
 	self register.
@@ -23,10 +29,28 @@ ExtendedService >> id [
 
 { #category : #initialization }
 ExtendedService >> initialize [
-
+	self loadConfiguration .
+	self initializeLogger.
 	registry := ServiceRegistry new.
-	logger := TinyLogger default.
+	self register.
 	
+	
+]
+
+{ #category : #initialization }
+ExtendedService >> initializeLogger [
+
+	logger := TinyLogger default.
+
+	TinyLogger default
+		removeAllLoggers;
+		timestampFormatBlock: [ :aStream :timestamp | 
+			timestamp asDate printOn: aStream.
+			aStream << ' '.	"Cannot use #space because of Stdio streams"
+			timestamp asTime print24: true on: aStream
+			].
+
+	TinyLogger default addFileLoggerNamed: self logPath.
 ]
 
 { #category : #running }
@@ -34,18 +58,37 @@ ExtendedService >> loadConfiguration [
 	""
 
 	| fn |
-	
-	fn := self defaultConfigurationPath .
+	fn := self defaultConfigurationPath asFileReference.
 
-	configuration := 
-		fn exists
-			ifTrue: [ fn readStream upToEnd asJson ]
-			ifFalse: [ Dictionary new ].
+	configuration := fn exists
+		ifTrue: [ fn readStream upToEnd asJson ]
+		ifFalse: [ Dictionary new ].
+	self postLoadConfiguration.
+]
+
+{ #category : #initialization }
+ExtendedService >> logFolder [
+	^ './logs/'.
+]
+
+{ #category : #logging }
+ExtendedService >> logInfo: aString [ 
+
+	"assumes TinyLogger protocol"
+	
+	aString record.
 ]
 
 { #category : #initialization }
 ExtendedService >> logPath [
-	^ './' , self class name , '.log'.
+	^ self logFolder , self class name , '.log'.
+]
+
+{ #category : #running }
+ExtendedService >> postLoadConfiguration [
+	"do nothing by default"
+
+	
 ]
 
 { #category : #'message interception' }
@@ -60,7 +103,8 @@ ExtendedService >> receiveMessage: aMessage [
 
 { #category : #initialization }
 ExtendedService >> register [
-	self registry register: self by: self id.
+	self logInfo: 'Registering service: ' , self class name.
+	registry register: self by: self id.
 ]
 
 { #category : #'message interception' }

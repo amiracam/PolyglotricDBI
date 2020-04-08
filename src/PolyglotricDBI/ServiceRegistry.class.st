@@ -13,7 +13,7 @@ Class {
 
 { #category : #'instance creation' }
 ServiceRegistry class >> new [ 
-	singleton ifNil: [ singleton := self basicNew initialize ]
+	^ singleton ifNil: [ singleton := self basicNew initialize ]
 ]
 
 { #category : #initialization }

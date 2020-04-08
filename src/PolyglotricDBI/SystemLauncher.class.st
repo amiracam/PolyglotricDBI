@@ -2,7 +2,8 @@ Class {
 	#name : #SystemLauncher,
 	#superclass : #ExtendedService,
 	#instVars : [
-		'services'
+		'services',
+		'isDevelopment'
 	],
 	#category : #'PolyglotricDBI-Services'
 }
@@ -27,24 +28,45 @@ SystemLauncher class >> writeDefaultConfiguration [
 ]
 
 { #category : #adding }
-SystemLauncher >> addService: serviceName [
+SystemLauncher >> addService: service [
 
-	services add: serviceName
+	services add: service
 	
 ]
 
 { #category : #initialization }
 SystemLauncher >> initialize [
-	services := OrderedCollection new.
-	"Setup registry singleton"
 	ServiceRegistry new.
-	TinyLogger default
-		addTranscriptLogger;
-		addFileLoggerNamed: self logPath.
+	super initialize.
+	self launch.
+]
+
+{ #category : #initialization }
+SystemLauncher >> initializeLogger [
+
+	super initializeLogger  .
+	self isDevelopment
+		ifTrue: [ TinyLogger default addTranscriptLogger ].
+]
+
+{ #category : #'accessing-testing' }
+SystemLauncher >> isDevelopment [
+	^isDevelopment 
+		ifNil: [ isDevelopment := (configuration at: 'isDevelopment') = 'true'. ]
+	
 ]
 
 { #category : #adding }
-SystemLauncher >> launch [ 
+SystemLauncher >> launch [
 
-	 services do:[:service | service deploy]
+	self logInfo: 'Launching services: ' , services asString.
+	services do: [ :service | service deploy ].
+]
+
+{ #category : #initialization }
+SystemLauncher >> postLoadConfiguration [
+
+	services := 
+		(configuration at: 'services')
+			collect: [ :ea | Smalltalk at: ea asSymbol ].
 ]

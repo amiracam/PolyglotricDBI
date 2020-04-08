@@ -23,25 +23,20 @@ HttpService >> connect: httpRequest [
 ]
 
 { #category : #'initailize-release' }
-HttpService >> defaultConfiguration [
-	^  configuration
-]
-
-{ #category : #'initailize-release' }
 HttpService >> initialize [
 	"setup http server and routes"
 
 	super initialize.
-	server := Teapot configure: self defaultConfiguration.
+	server := Teapot configure: self teapotConfiguration.
 	self initializeRoutes.
-	server start.
+	self startServer.
 ]
 
 { #category : #'initailize-release' }
 HttpService >> initializeRoutes [
 	"setup http server and routes"
 
-
+	self logInfo: 'Registering routes.'.
 	server
 		GET: '/heart_beat' -> [ :request | self testHeartBeat: request ];
 		POST: '/testJsonPayload' -> [ :request | self testJsonPayload: request ];
@@ -49,8 +44,27 @@ HttpService >> initializeRoutes [
 ]
 
 { #category : #'initailize-release' }
+HttpService >> port [
+	^ configuration at: 'port'.
+]
+
+{ #category : #'initailize-release' }
+HttpService >> startServer [
+	self logInfo: 'Starting server on port: ' , self port asString.
+	server start.
+]
+
+{ #category : #'initailize-release' }
 HttpService >> stop [ 
 	^ server stop 
+]
+
+{ #category : #'initailize-release' }
+HttpService >> teapotConfiguration [
+	| coll |
+	coll := OrderedCollection new.
+	configuration keysAndValuesDo: [ :k :v | coll add: (Association key: k asSymbol  value: v )].
+	^coll 
 ]
 
 { #category : #'private - testing' }

@@ -2,7 +2,7 @@ Class {
 	#name : #RdmsService,
 	#superclass : #ExtendedService,
 	#instVars : [
-		'connection'
+		'client'
 	],
 	#category : #'PolyglotricDBI-Services'
 }
@@ -28,15 +28,12 @@ RdmsService class >> writeConfiguration [
 
 { #category : #initialization }
 RdmsService >> checkConnectionStatus [
-	| healthy  |
-	
-	healthy := connection
-		in: [ :client | 
-			[ client isWorking ]
-				ensure: [ client close ] ].
-			
-	self assert: healthy.
-	'Succesfully connected to database' record.
+
+	[ client withConnection: [ :conn | [ conn isWorking ] ] ]
+		on: ConnectionTimedOut
+		do: [ :ex | ^ self logInfo: ex messageText ].
+
+	self logInfo: 'Succesfully connected to database'.
 ]
 
 { #category : #services }
@@ -45,31 +42,39 @@ RdmsService >> connect: aMessage [
 	self halt.
 ]
 
+{ #category : #acccessing }
+RdmsService >> connectionPoolFactory [
+	^ P3ConnectionPool
+]
+
+{ #category : #initialization }
+RdmsService >> connectionPoolSize [
+	^ configuration at: 'size'.
+]
+
 { #category : #initialization }
 RdmsService >> initialize [
 	"grab url from config file later"
 	super initialize.
-	self initializeLogger.
 	self initializeDatabaseConnection.
 ]
 
 { #category : #initialization }
 RdmsService >> initializeDatabaseConnection [
 	" pull url into config"
-	connection := P3Client new
-		url: 'psql://TEST_TBOSSS_ADMIN1:ADMIN1@192.168.40.107:5432/TEST_TBOSSS'.
 
-	self checkConnectionStatus.
+	self logInfo: 'Connecting to database @', self serverUrl , ' pool size: ' , self connectionPoolSize asString.
+
+	client := 
+		self connectionPoolFactory new
+			url: self serverUrl;
+			size: self connectionPoolSize.
+			
+	self checkConnectionStatus
+	
 ]
 
-{ #category : #initialization }
-RdmsService >> initializeLogger [
-
-	TinyLogger default
-		timestampFormatBlock: [ :aStream :timestamp | 
-			timestamp asDate printOn: aStream.
-			aStream << ' '.	"Cannot use #space because of Stdio streams"
-			timestamp asTime print24: true on: aStream ].
-		
-	TinyLogger default addFileLoggerNamed: 'polyglotric.log'
+{ #category : #acccessing }
+RdmsService >> serverUrl [
+	^ configuration at: 'url'.
 ]
