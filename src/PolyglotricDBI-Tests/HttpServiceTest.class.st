@@ -8,6 +8,40 @@ Class {
 }
 
 { #category : #test }
+HttpServiceTest >> testConnection [
+	| response dict |
+	""
+	dict := Dictionary new.
+	
+	dict 
+		at: 'user' put: 'CHRIS.MURRAY';
+		at: 'password' put: 'chris7'.
+		
+	response := ZnClient new
+		timeout: 2;
+		logToTranscript;
+		enforceHttpSuccess: true;
+		ifFail:
+				[ :ex | self inform: 'Fail to process connnect request: ' , ex printString ];
+		http;
+		enforceAcceptContentType: true;
+		accept: ZnMimeType textPlain;
+		host: 'localhost';
+		port: 8888;
+		addPath: 'connect';
+		entity:
+			(ZnEntity
+				with: (NeoJSONWriter toString: dict)
+				type: ZnMimeType applicationJson);
+		post;
+		response.
+		
+	dict := response contents asJson.
+	
+	self assert: [(dict at: 'sessionId') isNil not] 
+]
+
+{ #category : #test }
 HttpServiceTest >> testHearBeat [
 	| response |
 	""

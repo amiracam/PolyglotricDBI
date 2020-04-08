@@ -27,3 +27,10 @@ ServiceRegistry >> register: actor by: id [
 ""
 	registry at: id put: actor.
 ]
+
+{ #category : #initialization }
+ServiceRegistry >> send: aMessage to: actor from: sender [
+	"handle async , use send response to sender ? use TKActors ?"
+
+	^ (registry at: actor) receiveMessage: aMessage.
+]

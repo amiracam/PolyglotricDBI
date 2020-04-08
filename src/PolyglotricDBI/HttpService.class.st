@@ -15,11 +15,21 @@ Class {
 
 { #category : #routes }
 HttpService >> connect: httpRequest [
-	| msgPackage |
+	| msgPackage sessionId dict |
 	
-	msgPackage := httpRequest contents.
+	self logInfo: 'I HttpService received connect request'.
+	msgPackage := httpRequest contents asJson.
 	msgPackage at: #selector put: #connect:.
-	self send: msgPackage to: #RdmsService.
+	"for now until I figure out the async way with Pharo"
+	"expecting a session id if good"
+	sessionId := self send: msgPackage to: #RdmsService from: self.
+	dict := Dictionary new.
+	dict at: #sessionId put: sessionId.
+	
+	^ ZnResponse new
+		statusLine: ZnStatusLine ok;
+		entity: (ZnEntity json: (NeoJSONWriter toString: dict));
+		yourself.
 ]
 
 { #category : #'initailize-release' }

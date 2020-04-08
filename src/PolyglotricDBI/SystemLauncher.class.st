@@ -61,6 +61,7 @@ SystemLauncher >> launch [
 
 	self logInfo: 'Launching services: ' , services asString.
 	services do: [ :service | service deploy ].
+	self postLaunch.
 ]
 
 { #category : #initialization }

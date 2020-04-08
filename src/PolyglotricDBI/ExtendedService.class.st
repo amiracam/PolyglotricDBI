@@ -39,10 +39,11 @@ ExtendedService >> initialize [
 
 { #category : #initialization }
 ExtendedService >> initializeLogger [
-
+	| logPath |
+	
 	logger := TinyLogger default.
 
-	TinyLogger default
+	logger
 		removeAllLoggers;
 		timestampFormatBlock: [ :aStream :timestamp | 
 			timestamp asDate printOn: aStream.
@@ -50,7 +51,10 @@ ExtendedService >> initializeLogger [
 			timestamp asTime print24: true on: aStream
 			].
 
-	TinyLogger default addFileLoggerNamed: self logPath.
+	logPath := self logPath.
+	logPath asFileReference ensureCreateFile.
+
+	logger addFileLoggerNamed: logPath.
 ]
 
 { #category : #running }
@@ -68,7 +72,11 @@ ExtendedService >> loadConfiguration [
 
 { #category : #initialization }
 ExtendedService >> logFolder [
-	^ './logs/'.
+	| todaysFolder |
+	
+	todaysFolder := Date today printFormat: #(3 2 1 $- 1 1 2).
+
+	^ './logs/' , todaysFolder , '/'.
 ]
 
 { #category : #logging }
@@ -92,13 +100,13 @@ ExtendedService >> postLoadConfiguration [
 ]
 
 { #category : #'message interception' }
-ExtendedService >> receiveMessage: aMessage [
+ExtendedService >> receiveMessage: aMessageStructure [
 	"aMessage for now a Dictionary"
 
-	| selector |
+	| selector aMessage |
 	
-	selector := aMessage selector.
-	self perform: selector with: aMessage.
+	selector := aMessageStructure  at: #selector.
+	^ self perform: selector with: aMessageStructure .
 ]
 
 { #category : #initialization }
@@ -108,7 +116,8 @@ ExtendedService >> register [
 ]
 
 { #category : #'message interception' }
-ExtendedService >> send: aMessage to: actor [
-""
-	^ [ registry at: actor ] receiveMessage: aMessage.
+ExtendedService >> send: aMessage to: actor from: sender [
+	""
+
+	^ registry send: aMessage to: actor from: sender.
 ]
