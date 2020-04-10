@@ -28,12 +28,20 @@ RdmsService class >> writeConfiguration [
 
 { #category : #initialization }
 RdmsService >> checkConnectionStatus [
-
-	[ client withConnection: [ :conn | [ conn isWorking ] ] ]
+	[ 
+	| result |
+	
+	result := 
+	[ client withConnection: [ :conn | conn isWorking ] ]
 		on: ConnectionTimedOut
-		do: [ :ex | ^ self logInfo: ex messageText ].
-
-	self logInfo: 'Succesfully connected to database'.
+		do: [ :ex | 
+			self logInfo: ex messageText.
+			ex return: false
+			].
+	result
+		ifTrue:
+			[ self logInfo: 'Succesfully connected to database @' , self serverUrl ]
+	] fork.
 ]
 
 { #category : #services }
@@ -78,7 +86,7 @@ RdmsService >> connectionPoolFactory [
 
 { #category : #initialization }
 RdmsService >> connectionPoolSize [
-	^ configuration at: 'size'.
+	^ (configuration at: 'size').
 ]
 
 { #category : #initialization }
@@ -90,10 +98,7 @@ RdmsService >> initialize [
 
 { #category : #initialization }
 RdmsService >> initializeDatabaseConnection [
-	" pull url into config"
-
-	self logInfo: 'Connecting to database @', self serverUrl , ' pool size: ' , self connectionPoolSize asString.
-
+	
 	client := 
 		self connectionPoolFactory new
 			url: self serverUrl;
@@ -103,7 +108,13 @@ RdmsService >> initializeDatabaseConnection [
 	
 ]
 
+{ #category : #initialization }
+RdmsService >> logInfo: aString [
+	"for debugging purposes"
+	super logInfo: aString.
+]
+
 { #category : #acccessing }
 RdmsService >> serverUrl [
-	^ configuration at: 'url'.
+	^ (configuration at: 'url') trim.
 ]

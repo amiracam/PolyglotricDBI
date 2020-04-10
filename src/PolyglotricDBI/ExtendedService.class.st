@@ -16,6 +16,11 @@ ExtendedService class >> deploy [
 	^ self new
 ]
 
+{ #category : #acccessing }
+ExtendedService >> clearLogger [
+	logger := nil
+]
+
 { #category : #initialization }
 ExtendedService >> deploy [
 	self loadConfiguration.
@@ -39,22 +44,12 @@ ExtendedService >> initialize [
 
 { #category : #initialization }
 ExtendedService >> initializeLogger [
-	| logPath |
 	
-	logger := TinyLogger default.
-
-	logger
-		removeAllLoggers;
-		timestampFormatBlock: [ :aStream :timestamp | 
-			timestamp asDate printOn: aStream.
-			aStream << ' '.	"Cannot use #space because of Stdio streams"
-			timestamp asTime print24: true on: aStream
-			].
-
-	logPath := self logPath.
-	logPath asFileReference ensureCreateFile.
-
-	logger addFileLoggerNamed: logPath.
+	logger := Logger new.
+	
+	logger 
+		homeDir: self logFolder;
+		filename: self class name
 ]
 
 { #category : #running }
@@ -72,24 +67,14 @@ ExtendedService >> loadConfiguration [
 
 { #category : #initialization }
 ExtendedService >> logFolder [
-	| todaysFolder |
 	
-	todaysFolder := Date today printFormat: #(3 2 1 $- 1 1 2).
-
-	^ './logs/' , todaysFolder , '/'.
+	^ './logs/'
 ]
 
 { #category : #logging }
 ExtendedService >> logInfo: aString [ 
 
-	"assumes TinyLogger protocol"
-	
-	aString record.
-]
-
-{ #category : #initialization }
-ExtendedService >> logPath [
-	^ self logFolder , self class name , '.log'.
+	logger ifNotNil:[:l | l info: aString]
 ]
 
 { #category : #running }

@@ -43,6 +43,23 @@ HttpService >> initialize [
 ]
 
 { #category : #'initailize-release' }
+HttpService >> initializeLogger [ 
+
+	super initializeLogger.
+	
+	ZnLogEvent announcer unsubscribe: self.
+		
+	ZnLogEvent announcer 
+		when: ZnLogEvent
+		do: [ :event | 
+				| tokens description |
+				tokens := event printString splitOn: Character space.
+				description := Character space join: (tokens copyFrom: 5 to: tokens size) .
+				self logInfo: description].
+		
+]
+
+{ #category : #'initailize-release' }
 HttpService >> initializeRoutes [
 	"setup http server and routes"
 
@@ -60,13 +77,22 @@ HttpService >> port [
 
 { #category : #'initailize-release' }
 HttpService >> startServer [
+
 	self logInfo: 'Starting server on port: ' , self port asString.
+		
 	server start.
+
+	
 ]
 
 { #category : #'initailize-release' }
 HttpService >> stop [ 
-	^ server stop 
+
+	self logInfo: 'Stopping Server'.
+	server stop.
+	ZnLogEvent announcer unsubscribe: self.
+	
+
 ]
 
 { #category : #'initailize-release' }

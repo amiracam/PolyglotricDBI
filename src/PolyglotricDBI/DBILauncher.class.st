@@ -4,7 +4,7 @@ Class {
 	#category : #'PolyglotricDBI-Services'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'initialization - private' }
 DBILauncher >> postLaunch [
 
 	
