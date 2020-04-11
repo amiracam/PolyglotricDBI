@@ -46,37 +46,7 @@ RdmsService >> checkConnectionStatus [
 
 { #category : #services }
 RdmsService >> connect: aMessage [
-
-	| user response sql |
-	
-	self logInfo: 'I RdmsService received connect request.'.
-	
-	user := aMessage at: 'user'.
-	
-	sql := 
-		String new writeStreamDo: [ :s |
-		 		s 
-					nextPutAll: 'select * from tb_users where user_id= ' ;
-					nextPut: $';
-					nextPutAll: user;
-					nextPut: $';
-					contents
-				
-			].
-		
-	response := client withConnection: [ :c | c query: sql.].
-	
-	^response data size = 1 
-		ifTrue:[self logInfo: 'User: ' , user , ' successfully authenticated!'.
-				  UUIDGenerator new next asString
-		]
-		ifFalse:[self logInfo: 'User: ' , user , 'not successfully authenticated!'. 
-					nil
-		].
-		
-	
-		
-
+	self subclassResponsibility 
 ]
 
 { #category : #acccessing }

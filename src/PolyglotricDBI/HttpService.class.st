@@ -46,8 +46,6 @@ HttpService >> initialize [
 HttpService >> initializeLogger [ 
 
 	super initializeLogger.
-	
-	ZnLogEvent announcer unsubscribe: self.
 		
 	ZnLogEvent announcer 
 		when: ZnLogEvent
@@ -55,7 +53,8 @@ HttpService >> initializeLogger [
 				| tokens description |
 				tokens := event printString splitOn: Character space.
 				description := Character space join: (tokens copyFrom: 5 to: tokens size) .
-				self logInfo: description].
+				self logInfo: description
+		].
 		
 ]
 
