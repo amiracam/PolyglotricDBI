@@ -22,11 +22,12 @@ TBFunctionDispatcherTest >> testProcessFunction [
 	"assumes begin 1 "
 
 	| dict |
-	
+	self halt.
 	dict := Dictionary new.
-	dict 
+
+	dict
 		at: #arraySize put: 1;
-		at: #eventList put: 'TSTValue1|Value2|Value3'.
-		
-	functionDispatcher processFunction: dict
+		at: #eventList put: 'TST77777|Tanzi|true|20200412'.
+
+	functionDispatcher processFunction: dict.
 ]

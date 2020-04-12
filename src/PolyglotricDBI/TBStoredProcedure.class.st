@@ -41,7 +41,7 @@ TBStoredProcedure class >> process: aMessage on: connection [
 	^ handler value.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 TBStoredProcedure >> event: anEvent [ 
 	event := anEvent 
 ]

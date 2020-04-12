@@ -4,8 +4,24 @@ Class {
 	#category : #'PolyglotricDBI-Processing'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #processing }
 TBDebugFunctions >> processTST [
+	| stmnt |
+	""
+	self
+		execute: 'DROP TABLE IF EXISTS TstTable';
+		execute:
+			'CREATE TABLE TstTable (id INTEGER, name TEXT, active BOOLEAN, start DATE)'.
 
-	self  halt. 
+	stmnt := self
+		prepare: 'INSERT INTO TstTable (id, name, active, start) VALUES ($1, $2, $3, $4)'.
+
+	[ stmnt
+		execute:
+			{event id.
+			event name.
+			event active.
+			event start.}
+	]
+		ensure: [ stmnt close ].
 ]
