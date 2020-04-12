@@ -5,7 +5,7 @@ Class {
 	#name : #RdmsServiceTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'client'
+		'rdmsService'
 	],
 	#category : #'PolyglotricDBI-Tests-Services'
 }
@@ -24,18 +24,17 @@ RdmsServiceTest >> serverUrl [
 RdmsServiceTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
 
+	| client |
 	super setUp.
-	client := 
-		self connectionPoolFactory new
-				url: self serverUrl;
-				size: 5.
+	rdmsService := RdmsService new.
+	
 ]
 
 { #category : #testing }
 RdmsServiceTest >> testBeginTransaction [
 	""
 
-	client
+	rdmsService client
 		withConnection: [ :c | 
 			c
 				inTransaction: [ :ctx | 
@@ -43,8 +42,7 @@ RdmsServiceTest >> testBeginTransaction [
 						execute: 'DROP TABLE IF EXISTS table2';
 						execute: 'CREATE TABLE table2 (id INTEGER, name TEXT, enabled BOOLEAN)';
 						execute: 'INSERT INTO table2 (id, name, enabled) VALUES (1, ''foo'', true)';
-						execute:
-							'INSERT INTO table2 (id, name, enabled) VALUES (2, ''bar'', false)'
+						execute: 'INSERT INTO table2 (id, name, enabled) VALUES (2, ''bar'', false)'
 					]
 			].
 ]
@@ -53,7 +51,7 @@ RdmsServiceTest >> testBeginTransaction [
 RdmsServiceTest >> testBeginTransaction2 [
 	"assumes begin 1 "
 
-	client
+	rdmsService client
 		withConnection: [ :c | 
 			c execute: 'BEGIN'.
 			
@@ -66,14 +64,10 @@ RdmsServiceTest >> testBeginTransaction2 [
 ]
 
 { #category : #testing }
-RdmsServiceTest >> testCommit [
-]
-
-{ #category : #testing }
 RdmsServiceTest >> testRollbackTransaction [
 	""
 
-	client
+	rdmsService client
 		withConnection: [ :c | 
 			c execute: 'BEGIN'.
 			

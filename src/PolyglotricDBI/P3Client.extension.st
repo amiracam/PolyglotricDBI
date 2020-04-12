@@ -20,7 +20,6 @@ P3Client >> inTransaction: closure [
 		on: P3Error
 		do: [ :ex | 
 			self rollbackTransaction.
-			Transcript show: ex description;cr.
 			TransactionAborted new
 				signal: 'Transaction Aborted: ' , ex description
 			].

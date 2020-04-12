@@ -74,6 +74,11 @@ HttpService >> port [
 	^ configuration at: 'port'.
 ]
 
+{ #category : #'accessing-testing' }
+HttpService >> serverTransactionFactory [
+	^ RdmsServerTransaction.
+]
+
 { #category : #'initailize-release' }
 HttpService >> startServer [
 

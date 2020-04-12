@@ -40,29 +40,23 @@ RdmsFunctionDispatcher >> connect: aMessage [
 ]
 
 { #category : #services }
-RdmsFunctionDispatcher >> process: ev [ 
-
-	^TBStoredProcedure process: ev
+RdmsFunctionDispatcher >> process: ev [
+	""
+	self halt. 
+	client
+		withConnection: [ :conn | self rdmsFunctionFactory process: ev on: conn ].
 ]
 
 { #category : #services }
-RdmsFunctionDispatcher >> processFunction: aMessage [
+RdmsFunctionDispatcher >> processFunction: anEvent [
+	client
+		withConnection:
+			[ :conn | self serverTransactionFactory forEvent: anEvent on: conn ].
+]
 
-	| subEvents |
-	
-	subEvents := aMessage eventList.
-	
-	self transaction: [ :conn |
-		
-			subEvents do: [ :ev | 
-				self 
-					preProcessFunction: ev;
-					process: ev;
-				   postProcessFunction: ev.
-			 ]
-		
-	 ]
-	
+{ #category : #services }
+RdmsFunctionDispatcher >> serverTransactionFactory [
+	^ RdmsServerTransaction.
 ]
 
 { #category : #services }

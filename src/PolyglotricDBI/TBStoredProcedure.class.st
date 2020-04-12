@@ -1,6 +1,9 @@
 Class {
 	#name : #TBStoredProcedure,
 	#superclass : #RdmsFunction,
+	#instVars : [
+		'event'
+	],
 	#category : #'PolyglotricDBI-Processing'
 }
 
@@ -9,11 +12,18 @@ TBStoredProcedure class >> handlerFor: aTBClientEvent [
 
 	| method |
 	
-	method := aTBClientEvent method.
+	method := ('process', aTBClientEvent class name) asSymbol.
 	
 	self allSubclassesDo: [ :eaCls |
 		(eaCls selectors includes: method)
-			ifTrue: [^ eaCls new ]
+			ifTrue: [ 
+				 |function|
+				
+				 function := eaCls new.
+				 function event: aTBClientEvent.
+				 
+				 ^ MessageSend receiver: function selector: method
+			]
    ].
 
 	NoTBEventHandler new signal: 'method: ', method
@@ -21,7 +31,17 @@ TBStoredProcedure class >> handlerFor: aTBClientEvent [
 ]
 
 { #category : #accessing }
-TBStoredProcedure class >> process: aMessage [
+TBStoredProcedure class >> process: aMessage on: connection [
+
+	| handler |
 	
-	self handlerFor: aMessage
+	handler := self handlerFor: aMessage.
+	handler receiver rdmsClient: connection.
+	
+	^ handler value.
+]
+
+{ #category : #'as yet unclassified' }
+TBStoredProcedure >> event: anEvent [ 
+	event := anEvent 
 ]
