@@ -37,8 +37,7 @@ TBStoredProcedure class >> process: aMessage on: connection [
 	
 	handler := self handlerFor: aMessage.
 	handler receiver rdmsClient: connection.
-	
-	^ handler value.
+   handler value.
 ]
 
 { #category : #accessing }

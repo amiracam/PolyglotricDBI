@@ -4,26 +4,17 @@ Class {
 	#instVars : [
 		'client'
 	],
+	#classInstVars : [
+		'ExceptionAnnouncer'
+	],
 	#category : #'PolyglotricDBI-Services'
 }
 
-{ #category : #utilities }
-RdmsService class >> writeConfiguration [
-	"self writeConfiguration "
+{ #category : #announcements }
+RdmsService class >> exceptionAnnouncer [
+	"comment stating purpose of class-side message"
 
-	| json dict |
-	
-	dict := Dictionary new.
-	
-	dict 
-		at: #driver 	put: 'postgres';
-		at: #url 		put: 'psql://TEST_TBOSSS_ADMIN1:ADMIN1@192.168.40.107:5432/TEST_TBOSSS'.
-	
-	json := NeoJSONWriter toStringPretty: dict.
-	
-	'config.json' asFileReference writeStreamDo: [ :stream |
-		stream nextPutAll: json
-	 ]
+	^ ExceptionAnnouncer ifNil: [ ExceptionAnnouncer := Announcer new ].
 ]
 
 { #category : #initialization }
@@ -68,23 +59,39 @@ RdmsService >> initialize [
 
 { #category : #initialization }
 RdmsService >> initializeDatabaseConnection [
-	
-	client := 
-		self connectionPoolFactory new
-			url: self serverUrl;
-			size: self connectionPoolSize.
-			
-	self checkConnectionStatus
-	
+
+	client := self connectionPoolFactory new
+		url: self serverUrl;
+		size: self connectionPoolSize.
+
+	self checkConnectionStatus.
 ]
 
 { #category : #initialization }
-RdmsService >> logInfo: aString [
-	"for debugging purposes"
-	super logInfo: aString.
+RdmsService >> initializeLogger [
+	"grab url from config file later"
+
+	super initializeLogger.
+	self class exceptionAnnouncer
+		when: RdmsAnnouncement
+		do: [ :event | 
+			Transcript show: 'Received RDMS announcement from P3 subscription.';cr.
+			self logInfo: event error description
+			].
 ]
 
 { #category : #acccessing }
 RdmsService >> serverUrl [
 	^ (configuration at: 'url') trim.
+]
+
+{ #category : #running }
+RdmsService >> stop [
+	
+	self logInfo: 'Shuttindg down rdms client'.
+	
+	client ifNotNil: [ :c | c close ].
+	client := nil.
+	logger := nil.
+	
 ]

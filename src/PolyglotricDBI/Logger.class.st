@@ -38,14 +38,13 @@ Logger >> homeDir: anObject [
 ]
 
 { #category : #writing }
-Logger >> info: aString [
-
+Logger >> info: anObject [
 	self
 		write:
 			(String new writeStream
 				nextPutAll: '[INFO]';
 				tab;
-				nextPutAll: aString;
+				nextPutAll: anObject asString;
 				contents).
 ]
 

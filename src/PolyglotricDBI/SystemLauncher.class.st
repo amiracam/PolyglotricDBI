@@ -8,32 +8,6 @@ Class {
 	#category : #'PolyglotricDBI-Services'
 }
 
-{ #category : #writing }
-SystemLauncher class >> writeDefaultConfiguration [
-	"self writeDefaultConfiguration"
-
-	| dict fn working stream |
-	
-	dict := Dictionary new.
-
-	dict at: #services put: #().
-
-	fn := self new defaultConfigurationPath.
-
-	working := FileSystem disk workingDirectory.
-	stream := (working / fn) writeStream.
-	stream nextPutAll: (NeoJSONWriter toStringPretty: dict).
-	stream close.
-	
-]
-
-{ #category : #adding }
-SystemLauncher >> addService: service [
-
-	services add: service
-	
-]
-
 { #category : #initialization }
 SystemLauncher >> initialize [
 	ServiceRegistry new.
@@ -70,4 +44,20 @@ SystemLauncher >> postLoadConfiguration [
 	services := 
 		(configuration at: 'services')
 			collect: [ :ea | Smalltalk at: ea asSymbol ].
+]
+
+{ #category : #running }
+SystemLauncher >> stop [
+	"no op"
+	
+]
+
+{ #category : #'as yet unclassified' }
+SystemLauncher >> undeploy [
+	
+	self logInfo: 'Undeploying services: ', services asString.
+	registry ifNotNil: [ registry stop ] .
+	
+	registry := nil.
+	services := nil.
 ]

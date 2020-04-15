@@ -41,18 +41,30 @@ RdmsServerTransaction >> eventList: anObject [
 ]
 
 { #category : #accessing }
-RdmsServerTransaction >> process [
+RdmsServerTransaction >> functionFactory [
+	^ TBStoredProcedure.
+]
 
-	connection 
-		inTransaction: [:ctx | 
+{ #category : #events }
+RdmsServerTransaction >> newEventFrom: evData [
+	^ self rdmsEventFactory newFrom: evData.
+]
+
+{ #category : #processing }
+RdmsServerTransaction >> process [
+	""
+	connection
+		inTransaction: [ :ctx | 
 			((eventList at: #eventList) splitOn: Character cr)
-				do:[:evData | 
-					TBStoredProcedure
-						process: (TBClientEvent newFrom: evData) 
-						on: ctx
-				]
-			
-			
-		 ]
-	
+				do:
+					[ :evData |
+						 self 
+							functionFactory 
+							process: (self newEventFrom: evData) on: ctx ]
+			].
+]
+
+{ #category : #events }
+RdmsServerTransaction >> rdmsEventFactory [
+	^ RdmsEvent
 ]

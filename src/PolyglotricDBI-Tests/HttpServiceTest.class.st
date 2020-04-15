@@ -55,12 +55,41 @@ HttpServiceTest >> testHearBeat [
 		enforceAcceptContentType: true;
 		accept: ZnMimeType textPlain;
 		host: 'localhost';
-		port: 1701;
+		port: 8888;
 		addPath: 'heart_beat';
 		get;
 		response.
 
-	self assert: response contents equals: 'OK'.
+	self assert: response contents trim equals: 'OK'.
+]
+
+{ #category : #test }
+HttpServiceTest >> testRunFunctionTST1 [
+	| dict response |
+	""
+	dict := Dictionary new.
+	dict
+		at: #arraySize put: 1;
+		at: #eventList put: 'TST77777|Tang|true|20200420'.
+
+	response := ZnClient new
+		timeout: 200;
+		logToTranscript;
+		enforceHttpSuccess: true;
+		ifFail:
+				[ :ex | self inform: 'Fail to process JSON payload test: ' , ex printString ];
+		http;
+		enforceAcceptContentType: true;
+		accept: ZnMimeType textPlain;
+		host: 'localhost';
+		port: 8888;
+		addPath: 'runProc';
+		entity:
+			(ZnEntity
+				with: (NeoJSONWriter toString: dict)
+				type: ZnMimeType applicationJson);
+		post;
+		response.
 ]
 
 { #category : #test }

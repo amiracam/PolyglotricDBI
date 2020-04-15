@@ -1,6 +1,6 @@
 Class {
 	#name : #TBClientEvent,
-	#superclass : #Object,
+	#superclass : #RdmsEvent,
 	#category : #'PolyglotricDBI-Events'
 }
 

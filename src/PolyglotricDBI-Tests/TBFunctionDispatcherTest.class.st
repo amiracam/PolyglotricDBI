@@ -22,7 +22,7 @@ TBFunctionDispatcherTest >> testProcessFunction [
 	"assumes begin 1 "
 
 	| dict |
-	self halt.
+	
 	dict := Dictionary new.
 
 	dict

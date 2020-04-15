@@ -34,3 +34,9 @@ ServiceRegistry >> send: aMessage to: actor from: sender [
 
 	^ (registry at: actor) receiveMessage: aMessage.
 ]
+
+{ #category : #release }
+ServiceRegistry >> stop [ 
+
+	registry do: [ :ea | ea stop ]
+]

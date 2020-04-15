@@ -72,9 +72,8 @@ ExtendedService >> logFolder [
 ]
 
 { #category : #logging }
-ExtendedService >> logInfo: aString [ 
-
-	logger ifNotNil:[:l | l info: aString]
+ExtendedService >> logInfo: anObject [
+	logger ifNotNil: [ :l | l info: anObject  ].
 ]
 
 { #category : #running }
@@ -105,4 +104,10 @@ ExtendedService >> send: aMessage to: actor from: sender [
 	""
 
 	^ registry send: aMessage to: actor from: sender.
+]
+
+{ #category : #running }
+ExtendedService >> stop [ 
+	"clean up and unschedule if appropriate"
+	self subclassResponsibility 
 ]

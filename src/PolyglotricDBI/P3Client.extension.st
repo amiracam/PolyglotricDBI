@@ -19,10 +19,9 @@ P3Client >> inTransaction: closure [
 	[ closure value: self ]
 		on: P3Error
 		do: [ :ex | 
-			self halt. 
 			self rollbackTransaction.
 			TransactionAborted new
-				signal: 'Transaction Aborted: ' , ex description
+				signal: ex description
 			].
 
 	self commitTransaction.

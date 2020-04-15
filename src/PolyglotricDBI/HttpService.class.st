@@ -7,6 +7,9 @@ Class {
 	#instVars : [
 		'server'
 	],
+	#classVars : [
+		'ExceptionAnnouncer'
+	],
 	#classInstVars : [
 		'singleton'
 	],
@@ -22,7 +25,7 @@ HttpService >> connect: httpRequest [
 	msgPackage at: #selector put: #connect:.
 	"for now until I figure out the async way with Pharo"
 	"expecting a session id if good"
-	sessionId := self send: msgPackage to: #RdmsService from: self.
+	sessionId := self send: msgPackage to: #TBFunctionDispatcher  from: self.
 	dict := Dictionary new.
 	dict at: #sessionId put: sessionId.
 	
@@ -74,11 +77,6 @@ HttpService >> port [
 	^ configuration at: 'port'.
 ]
 
-{ #category : #'accessing-testing' }
-HttpService >> serverTransactionFactory [
-	^ RdmsServerTransaction.
-]
-
 { #category : #'initailize-release' }
 HttpService >> startServer [
 
@@ -93,8 +91,11 @@ HttpService >> startServer [
 HttpService >> stop [ 
 
 	self logInfo: 'Stopping Server'.
-	server stop.
+	server ifNotNil: [:s | s stop ].
 	ZnLogEvent announcer unsubscribe: self.
+	logger := nil.
+	server := nil.
+	registry := nil.
 	
 
 ]

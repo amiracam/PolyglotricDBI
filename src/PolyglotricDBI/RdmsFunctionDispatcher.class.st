@@ -47,7 +47,7 @@ RdmsFunctionDispatcher >> process: ev [
 		withConnection: [ :conn | self rdmsFunctionFactory process: ev on: conn ].
 ]
 
-{ #category : #services }
+{ #category : #messages }
 RdmsFunctionDispatcher >> processFunction: anEvent [
 	client
 		withConnection:
