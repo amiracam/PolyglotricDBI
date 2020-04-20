@@ -17,10 +17,22 @@ DBIService >> initializeRoutes [
 { #category : #routes }
 DBIService >> runProcedure: request [
 
-	| httpRequest msgPackage dict |
+	|  msgPackage dict eventList |
 	self logInfo: 'I HttpService received connect request'.
 	msgPackage := request contents asJson.
 	msgPackage at: #selector put: #runProcedure:.
+	
+	"Assumes async fire/forget but some functions have a an expected return value / msg"
+	"Validate event list"
+	
+	eventList := (msgPackage at: #eventList) splitOn: Character cr.
+	eventList size = (msgPackage at: 'arraySize')
+		ifFalse: [^ ZnResponse new
+		statusLine: ZnStatusLine badRequest ;
+		entity: (ZnEntity json: (NeoJSONWriter toString: (Dictionary new at: #response put: 'Array size doesnt match event size.';yourself) ));
+		yourself. ] 
+	ifTrue:[msgPackage at: #eventList put: eventList].
+	 
 	
 	 self
 		send: msgPackage

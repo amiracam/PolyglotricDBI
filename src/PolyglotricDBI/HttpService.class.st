@@ -18,6 +18,7 @@ Class {
 
 { #category : #routes }
 HttpService >> connect: httpRequest [
+	<todo>
 	| msgPackage sessionId dict |
 	
 	self logInfo: 'I HttpService received connect request'.

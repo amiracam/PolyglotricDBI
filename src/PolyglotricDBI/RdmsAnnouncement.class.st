@@ -4,24 +4,24 @@ Class {
 	#instVars : [
 		'timestamp',
 		'session',
-		'error'
+		'message'
 	],
 	#category : #'PolyglotricDBI-Announcements'
 }
 
-{ #category : #accessing }
-RdmsAnnouncement >> error [
-	^ error
-]
-
-{ #category : #accessing }
-RdmsAnnouncement >> error: anObject [
-	error := anObject
-]
-
 { #category : #initialization }
 RdmsAnnouncement >> initialize [ 
 	timestamp := DateAndTime now.
+]
+
+{ #category : #accessing }
+RdmsAnnouncement >> message [
+	^ message
+]
+
+{ #category : #accessing }
+RdmsAnnouncement >> message: anObject [
+	message := anObject
 ]
 
 { #category : #accessing }

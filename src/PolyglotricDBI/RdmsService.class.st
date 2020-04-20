@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'client'
 	],
-	#classInstVars : [
+	#classVars : [
 		'ExceptionAnnouncer'
 	],
 	#category : #'PolyglotricDBI-Services'
@@ -14,7 +14,8 @@ Class {
 RdmsService class >> exceptionAnnouncer [
 	"comment stating purpose of class-side message"
 
-	^ ExceptionAnnouncer ifNil: [ ExceptionAnnouncer := Announcer new ].
+	ExceptionAnnouncer ifNil: [ ExceptionAnnouncer := Announcer new ].
+	^ExceptionAnnouncer 
 ]
 
 { #category : #initialization }
@@ -70,13 +71,12 @@ RdmsService >> initializeDatabaseConnection [
 { #category : #initialization }
 RdmsService >> initializeLogger [
 	"grab url from config file later"
-
+	
 	super initializeLogger.
 	self class exceptionAnnouncer
 		when: RdmsAnnouncement
 		do: [ :event | 
-			Transcript show: 'Received RDMS announcement from P3 subscription.';cr.
-			self logInfo: event error description
+			self logInfo: event message 
 			].
 ]
 

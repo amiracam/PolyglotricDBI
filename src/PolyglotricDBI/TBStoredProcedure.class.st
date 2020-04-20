@@ -2,7 +2,12 @@ Class {
 	#name : #TBStoredProcedure,
 	#superclass : #RdmsFunction,
 	#instVars : [
-		'event'
+		'event',
+		'rowCount',
+		'errorCode',
+		'returnMsg',
+		'logAction',
+		'logResult'
 	],
 	#category : #'PolyglotricDBI-Processing'
 }
@@ -40,7 +45,24 @@ TBStoredProcedure class >> process: aMessage on: connection [
    handler value.
 ]
 
+{ #category : #'as yet unclassified' }
+TBStoredProcedure >> announce: info [
+	^ self serviceAnnouncer announce: (RdmsAnnouncement new message: info).
+]
+
 { #category : #accessing }
-TBStoredProcedure >> event: anEvent [ 
-	event := anEvent 
+TBStoredProcedure >> event: anObject [
+	event := anObject
+]
+
+{ #category : #'as yet unclassified' }
+TBStoredProcedure >> logInfo [
+	
+	
+	{logAction.} do:[ :ea | self announce: ea ].
+]
+
+{ #category : #'as yet unclassified' }
+TBStoredProcedure >> serviceAnnouncer [
+	^ RdmsService exceptionAnnouncer.
 ]

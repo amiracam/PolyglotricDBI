@@ -14,10 +14,13 @@ RdmsServerTransaction class >> forEvent: eventList on: client [
 	| inst |
 	
 	inst := self new.
+	
 	inst eventList: eventList.
 	inst connection: client.
 	
-	^ inst process 
+	^ inst process.
+	
+	
 ]
 
 { #category : #accessing }
@@ -52,16 +55,22 @@ RdmsServerTransaction >> newEventFrom: evData [
 
 { #category : #processing }
 RdmsServerTransaction >> process [
-	""
+	
+	
+	| function |
+	
 	connection
 		inTransaction: [ :ctx | 
-			((eventList at: #eventList) splitOn: Character cr)
+			self flag: #todo.
+			"We probably need a better object than a dictionary to house the incoming event requests"
+			
+			((eventList at: #eventList))
 				do:
 					[ :evData |
-						 self 
-							functionFactory 
-							process: (self newEventFrom: evData) on: ctx ]
-			].
+					function := self functionFactory process: evData on: ctx ]
+		].
+		
+	^ function
 ]
 
 { #category : #events }

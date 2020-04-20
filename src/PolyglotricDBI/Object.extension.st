@@ -7,3 +7,9 @@ Object >> defaultConfigurationPath [
 
 	
 ]
+
+{ #category : #'*PolyglotricDBI' }
+Object >> toJson [
+
+	^ NeoJSONWriter toString: self.
+]

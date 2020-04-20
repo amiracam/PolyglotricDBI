@@ -4,6 +4,30 @@ Class {
 	#category : #'PolyglotricDBI-Services'
 }
 
+{ #category : #messages }
+TBFunctionDispatcher >> announceException: ex [
+	RdmsService exceptionAnnouncer
+		announce: (RdmsAnnouncement new message: ex description).
+]
+
+{ #category : #messages }
+TBFunctionDispatcher >> announceProcessedEvent: anEvent [
+	^ RdmsService exceptionAnnouncer
+		announce:
+			(RdmsAnnouncement new
+				message: ('Processed event: {1}' format: {anEvent.})).
+]
+
+{ #category : #'instance creation' }
+TBFunctionDispatcher >> newEventFrom: evData [
+	^ self rdmsEventFactory newFrom: evData.
+]
+
+{ #category : #'as yet unclassified' }
+TBFunctionDispatcher >> rdmsEventFactory [
+	^ TBClientEvent 
+]
+
 { #category : #services }
 TBFunctionDispatcher >> rdmsFunctionFactory [
 	^ TBStoredProcedure.
@@ -11,14 +35,18 @@ TBFunctionDispatcher >> rdmsFunctionFactory [
 
 { #category : #messages }
 TBFunctionDispatcher >> runProcedure: anEvent [
+| events |
+self halt. 
+	events := (anEvent at: 'eventList') collect: [ :ea | self newEventFrom: ea ].
+	anEvent at: 'eventList' put: events.
 	client
 		withConnection: [ :conn | 
 			[ self serverTransactionFactory forEvent: anEvent on: conn.
-			  self logInfo: ('Processed event: {1}' format: {anEvent.})
+			  self announceProcessedEvent: anEvent
 			]
 				on: TransactionAborted
 				do: [ :ex | 
-					self logInfo: ex description.
+					self announceException: ex.
 					^ ex return
 					]
 			].

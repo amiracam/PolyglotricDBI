@@ -14,17 +14,18 @@ P3Client >> commitTransaction [
 
 { #category : #'*PolyglotricDBI' }
 P3Client >> inTransaction: closure [
+	""
+
 	self beginTransaction.
 
-	[ closure value: self ]
+	[ closure value: self.
+	self commitTransaction
+	]
 		on: P3Error
 		do: [ :ex | 
 			self rollbackTransaction.
-			TransactionAborted new
-				signal: ex description
+			TransactionAborted new signal: ex description
 			].
-
-	self commitTransaction.
 ]
 
 { #category : #'*PolyglotricDBI' }

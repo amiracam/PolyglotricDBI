@@ -39,16 +39,10 @@ RdmsFunctionDispatcher >> connect: aMessage [
 
 ]
 
-{ #category : #services }
-RdmsFunctionDispatcher >> process: ev [
-	""
-	self halt. 
-	client
-		withConnection: [ :conn | self rdmsFunctionFactory process: ev on: conn ].
-]
-
 { #category : #messages }
 RdmsFunctionDispatcher >> processFunction: anEvent [
+	""
+	self halt. 
 	client
 		withConnection:
 			[ :conn | self serverTransactionFactory forEvent: anEvent on: conn ].

@@ -70,7 +70,7 @@ HttpServiceTest >> testRunFunctionTST1 [
 	dict := Dictionary new.
 	dict
 		at: #arraySize put: 1;
-		at: #eventList put: 'TST77777|Tang|true|20200420'.
+		at: #eventList put: 'TST77777|Tang|true|20200421'.
 
 	response := ZnClient new
 		timeout: 200;
