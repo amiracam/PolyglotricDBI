@@ -68,10 +68,13 @@ Logger >> logDir [
 { #category : #private }
 Logger >> logFile [
 	
+	
 	^logFile 
 		ifNil:[
+			| fRef |
 			logFile := self logDir , '/', filename, '.log'.
-			logFile asFileReference ensureCreateFile.
+			(fRef := logFile asFileReference) ensureCreateFile.
+			fRef exists ifFalse: [ self error: 'Unable to create log file for path: ', logFile].
 			logFile	
 		]
 ]

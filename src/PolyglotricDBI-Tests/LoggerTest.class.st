@@ -26,8 +26,24 @@ LoggerTest >> setUp [
 	
 	logger := Logger new.
 	logger 
-		homeDir: './logs/';
+		homeDir: './testLogs/';
 		filename: 'test'
+
+]
+
+{ #category : #testing }
+LoggerTest >> testBadPath [
+
+	| badLogger |
+	
+	badLogger := Logger new.
+	badLogger 
+		homeDir: './../../../../badLogs/';
+		filename: 'badLogger'.
+		
+	self should:[badLogger info: 'I should not get here'] raise: Exception 
+		
+	
 
 ]
 
@@ -35,11 +51,11 @@ LoggerTest >> setUp [
 LoggerTest >> testCreation [ 
 
 	self assert: logger filename equals: 'test'.
-	self assert: logger homeDir  equals: './logs/'.
+	self assert: logger homeDir  equals: './logsxxx/'.
 ]
 
 { #category : #testing }
 LoggerTest >> testWrite [
 
-	self logger write: 'Hello there'
+	self logger info: 'Hello there'
 ]

@@ -1,10 +1,14 @@
+"
+Pull out configuration and logger into a Trait
+"
 Class {
 	#name : #ExtendedService,
 	#superclass : #Object,
+	#traits : 'Configurable + Loggable',
+	#classTraits : 'Configurable classTrait + Loggable classTrait',
 	#instVars : [
 		'registry',
 		'id',
-		'configuration',
 		'logger'
 	],
 	#category : #'PolyglotricDBI-Services'
@@ -39,47 +43,6 @@ ExtendedService >> initialize [
 	registry := ServiceRegistry new.
 	self register.
 	
-	
-]
-
-{ #category : #initialization }
-ExtendedService >> initializeLogger [
-	
-	logger := Logger new.
-	
-	logger 
-		homeDir: self logFolder;
-		filename: self class name
-]
-
-{ #category : #running }
-ExtendedService >> loadConfiguration [
-	""
-
-	| fn |
-	fn := self defaultConfigurationPath asFileReference.
-
-	configuration := fn exists
-		ifTrue: [ fn readStream upToEnd asJson ]
-		ifFalse: [ Dictionary new ].
-	self postLoadConfiguration.
-]
-
-{ #category : #initialization }
-ExtendedService >> logFolder [
-	
-	^ './logs/'
-]
-
-{ #category : #logging }
-ExtendedService >> logInfo: anObject [
-	logger ifNotNil: [ :l | l info: anObject  ].
-]
-
-{ #category : #running }
-ExtendedService >> postLoadConfiguration [
-	"do nothing by default"
-
 	
 ]
 

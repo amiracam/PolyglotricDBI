@@ -17,10 +17,11 @@ Connect class >> user: aUser pass: aPass ip: anIp [
 		user: aUser;
 		pass: aPass;
 		ip: anIp ;
+		initialize;
 		yourself 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 Connect >> inititalize [
 
 	super initialize .

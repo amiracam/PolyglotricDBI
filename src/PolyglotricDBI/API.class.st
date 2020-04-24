@@ -76,13 +76,6 @@ API >> jsonFormat: dataResponse [
 	]
 ]
 
-{ #category : #private }
-API >> logInfo: aString [
-	"Using TinyLogger"
-	
-	aString record
-]
-
 { #category : #processing }
 API >> performer [
 
@@ -114,6 +107,12 @@ API >> processOn: application [
 API >> register: aSource [
 
 	Source := aSource 
+]
+
+{ #category : #accessing }
+API >> source [ 
+
+	^Source 
 ]
 
 { #category : #initialization }
