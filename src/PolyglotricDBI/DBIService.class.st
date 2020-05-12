@@ -1,17 +1,17 @@
 Class {
 	#name : #DBIService,
 	#superclass : #HttpService,
+	#traits : 'TBConfigurable',
+	#classTraits : 'TBConfigurable classTrait',
 	#category : #'PolyglotricDBI-Services'
 }
 
 { #category : #'initailize-release' }
 DBIService >> initializeRoutes [
-
 	super initializeRoutes.
-	
+
 	server 
-		POST: '/runProc' -> [:request |  self runProcedure: request ]
-	
+		POST: '/runProc' -> [ :request | self runProcedure: request ].
 ]
 
 { #category : #routes }

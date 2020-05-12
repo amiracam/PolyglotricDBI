@@ -12,8 +12,19 @@ Class {
 }
 
 { #category : #'instance creation' }
+ServiceRegistry class >> clearSingleton [
+	singleton := nil.
+]
+
+{ #category : #'instance creation' }
 ServiceRegistry class >> new [ 
 	^ singleton ifNil: [ singleton := self basicNew initialize ]
+]
+
+{ #category : #'instance creation' }
+ServiceRegistry class >> stop [
+	singleton ifNotNil: [ :s | s stopInstance ].
+	self clearSingleton.
 ]
 
 { #category : #initialization }
@@ -36,7 +47,14 @@ ServiceRegistry >> send: aMessage to: actor from: sender [
 ]
 
 { #category : #release }
-ServiceRegistry >> stop [ 
+ServiceRegistry >> stop [
 
-	registry do: [ :ea | ea stop ]
+	self class stop
+]
+
+{ #category : #release }
+ServiceRegistry >> stopInstance [ 
+
+	registry do: [ :ea | ea ifNotNil: [:v | v stop ]].
+	registry := nil.
 ]

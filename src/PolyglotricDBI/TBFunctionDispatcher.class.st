@@ -1,6 +1,8 @@
 Class {
 	#name : #TBFunctionDispatcher,
 	#superclass : #RdmsFunctionDispatcher,
+	#traits : 'TBConfigurable',
+	#classTraits : 'TBConfigurable classTrait',
 	#category : #'PolyglotricDBI-Services'
 }
 
@@ -18,9 +20,40 @@ TBFunctionDispatcher >> announceProcessedEvent: anEvent [
 				message: ('Processed event: {1}' format: {anEvent.})).
 ]
 
+{ #category : #'name resolutions' }
+TBFunctionDispatcher >> connectionMapFor: user and: password [
+
+	^ {
+	(#user -> user).
+	(#pass -> password).
+	(#dbHost -> appConfiguration db_host).
+	(#dbSvcn -> appConfiguration db_svcn).
+	(#tb_envt -> appConfiguration tb_envt).
+	} asDictionary.
+]
+
+{ #category : #'name resolutions' }
+TBFunctionDispatcher >> currentDatabaseType [
+	^ appConfiguration db_type.
+]
+
 { #category : #'instance creation' }
 TBFunctionDispatcher >> newEventFrom: evData [
 	^ self rdmsEventFactory newFrom: evData.
+]
+
+{ #category : #'name resolutions' }
+TBFunctionDispatcher >> oracleConnectionStringFor: user and: password [
+
+	^ 'jdbc:oracle:thin{user}/{pass}/{dbHost}.{dbSvcn}' format: (self connectionMapFor: user and: password )
+]
+
+{ #category : #'name resolutions' }
+TBFunctionDispatcher >> postgresqlConnectionStringFor: user and: password [
+	"psql://TEST_TBOSSS_ADMIN1:ADMIN1@192.168.40.107:5432/TEST_TBOSSS"
+
+	^ 'psql://{user}:{pass}@{dbHost}/{tb_envt}_{dbSvcn}'
+			format: (self connectionMapFor: user and: password).
 ]
 
 { #category : #'as yet unclassified' }

@@ -49,10 +49,8 @@ ResourcesTest >> testLoadSysConfig [
 
 { #category : #testing }
 ResourcesTest >> testUrlForUserPass [
-"def test_url_for_user_pass
-    inst = @resource.connection_string username: 'Charles', pass: 'Tanzi'
-    assert_equal inst, jdbc:postgresql://192.168.40.107:5432/TEST_TBOSSS?user=TEST_TBOSSS_Charles&password=Tanzi
-  end"
-
-	resource connectionString
+	| url |
+	
+	url := resource connectionUrlFor: 'Charles' and: 'Tanzi'.
+	self assert: url equals: 'jdbc:postgresql://192.168.40.107:5432/TEST_TBOSSS?user=Charles&password=Tanzi'
 ]

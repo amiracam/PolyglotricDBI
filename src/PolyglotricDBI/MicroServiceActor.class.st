@@ -1,23 +1,14 @@
-"
-I handle route requests from clients
-"
 Class {
-	#name : #HttpService,
-	#superclass : #ExtendedService,
+	#name : #MicroServiceActor,
+	#superclass : #ExtendedServiceActor,
 	#instVars : [
 		'server'
 	],
-	#classVars : [
-		'ExceptionAnnouncer'
-	],
-	#classInstVars : [
-		'singleton'
-	],
-	#category : #'PolyglotricDBI-Services'
+	#category : #'PolyglotricDBI-Actors'
 }
 
-{ #category : #routes }
-HttpService >> connect: httpRequest [
+{ #category : #initialization }
+MicroServiceActor >> connect: httpRequest [
 	<todo>
 	| msgPackage sessionId dict |
 	self logInfo: 'I HttpService received connect request'.
@@ -42,34 +33,18 @@ HttpService >> connect: httpRequest [
 		yourself.
 ]
 
-{ #category : #'initailize-release' }
-HttpService >> initialize [
+{ #category : #initialization }
+MicroServiceActor >> initialize [
 	"setup http server and routes"
-
+	
 	super initialize.
 	server := Teapot configure: self teapotConfiguration.
 	self initializeRoutes.
 	self startServer.
 ]
 
-{ #category : #'initailize-release' }
-HttpService >> initializeLogger [ 
-
-	super initializeLogger.
-		
-	ZnLogEvent announcer 
-		when: ZnLogEvent
-		do: [ :event | 
-				| tokens description |
-				tokens := event printString splitOn: Character space.
-				description := Character space join: (tokens copyFrom: 5 to: tokens size) .
-				self logInfo: description
-		].
-		
-]
-
-{ #category : #'initailize-release' }
-HttpService >> initializeRoutes [
+{ #category : #initialization }
+MicroServiceActor >> initializeRoutes [
 	"setup http server and routes"
 
 	self logInfo: 'Registering routes.'.
@@ -79,23 +54,22 @@ HttpService >> initializeRoutes [
 		POST: '/connect' -> [ :request | self connect: request ].
 ]
 
-{ #category : #'initailize-release' }
-HttpService >> port [
+{ #category : #initialization }
+MicroServiceActor >> port [
 	^ configuration at: 'port'.
 ]
 
-{ #category : #'initailize-release' }
-HttpService >> startServer [
+{ #category : #initialization }
+MicroServiceActor >> startServer [
 
 	self logInfo: 'Starting server on port: ' , self port asString.
 		
 	server start.
 
-	
 ]
 
-{ #category : #'initailize-release' }
-HttpService >> stop [ 
+{ #category : #running }
+MicroServiceActor >> stop [ 
 
 	self logInfo: 'Stopping Server'.
 	server ifNotNil: [:s | s stop ].
@@ -107,16 +81,16 @@ HttpService >> stop [
 
 ]
 
-{ #category : #'initailize-release' }
-HttpService >> teapotConfiguration [
+{ #category : #initialization }
+MicroServiceActor >> teapotConfiguration [
 	| coll |
 	coll := OrderedCollection new.
 	configuration keysAndValuesDo: [ :k :v | coll add: (Association key: k asSymbol  value: v )].
 	^coll 
 ]
 
-{ #category : #'private - testing' }
-HttpService >> testHeartBeat: httpRequest [
+{ #category : #initialization }
+MicroServiceActor >> testHeartBeat: httpRequest [
 	""
 
 	^ ZnResponse new
@@ -125,8 +99,8 @@ HttpService >> testHeartBeat: httpRequest [
 		yourself.
 ]
 
-{ #category : #'private - testing' }
-HttpService >> testJsonPayload: httpRequest [
+{ #category : #initialization }
+MicroServiceActor >> testJsonPayload: httpRequest [
 	""
 
 	| dict |

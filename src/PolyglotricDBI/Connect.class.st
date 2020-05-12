@@ -51,8 +51,8 @@ Connect >> pass: anObject [
 
 { #category : #playing }
 Connect >> play [ 
-	
-	(self testConnection: url)
+	"Check if user exists in DB"
+	(self testIfValidUser)
 		ifTrue:[
 			self register.	
 		]
